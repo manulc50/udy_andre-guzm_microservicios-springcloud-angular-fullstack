@@ -1,0 +1,121 @@
+<!-- Panel o tarjeta obtenida de la página de Bootstrap y personalizada por nosotros -->
+<div class="card bg-light mb-3">
+    <!-- Mostramos el contenido de la propiedad "titulo" de la clase asociada a este componente -->
+    <div class="card-header">{{ titulo }}</div>
+    <div class="card-body">
+        <!-- Botón con estilos de Bootstrap que utiliza la directiva de Angular "routerLink" para navegar a la ruta "/examenes" asociada al componente "ExamenesComponent" cuando se pulsa en él -->
+        <button class="btn btn-secondary my-2" routerLink="/examenes">volver</button>
+        <!-- Formulario de creación o edición de examenes -->
+        <form>
+            <!-- Contenedor con el estilo de Bootstrap "form-group" para el campo "Nombre" -->
+            <div class="form-group">
+                <!-- El atributo "for" sirve para enlazar este label con el input de abajo, es decir, con el input con name "nombre" e id "nombre" -->
+                <!-- De esta forma, como el atributo "for" tiene el mismo valor que el atributo "id" del input, cuando pulsemos sobre este label en la vista(html), automáticamente se establecerá el foco dentro de este input -->
+                <label for="nombre">Nombre</label>
+                <!-- Input con el estilo de Bootstrap "form-control" para introducir el nombre del exámen -->
+                <!-- Con la directiva ngModel de Angular mapeamos el nombre que introduzca el usuario en este input con la propiedad "nombre" de la propiedad "entidad" de la clase asociada a este componente -->
+                <!-- La directiva ngModel es bidireccional, es decir, si la propiedad "nombre" de la propiedad "entidad" está definida y tiene contenido, a través de esta directiva, también se muestra dicho contenido en el input -->
+                <input type="text" id="nombre" name="nombre" [(ngModel)]="entidad.nombre" class="form-control"/>
+                <!-- Con la directiva *ngIf de Angular sólo mostramos este contenedor o div si la propiedad "error", de la clase asociada a este componente, existe y , además, contiene otra propiedad llamada "nombre" que también existe y viene definida -->
+                <!-- Este contendor o div utiliza los estilos de Bootstrap "alert alert-danger" y muestra el contenido de la propiedad "nombre" de la propiedad "error" de la clase asociada a este componente -->
+                <div *ngIf="error?.nombre" class="alert alert-danger">
+                    {{ error.nombre }}
+                </div>
+            </div>
+            <!-- Contenedor con el estilo de Bootstrap "form-group" para el campo "Asignatura Padre" -->
+            <div class="form-group">
+                <!-- El atributo "for" sirve para enlazar este label con el select de abajo, es decir, con el select con name "asignaturaPadre" e id "asignaturaPadre" -->
+                <!-- De esta forma, como el atributo "for" tiene el mismo valor que el atributo "id" del select, cuando pulsemos sobre este label en la vista(html), automáticamente se establecerá el foco dentro de este select -->
+                <label for="asignaturaPadre">Asignatura Padre</label>
+                <!-- Select con el estilo de Bootstrap "form-control" para seleccionar la asignatura padre de la asignatura hija asociada al exámen-->
+                <!-- Con la directiva ngModel de Angular mapeamos la asignatura seleccionada por el usuario en este select con la propiedad "asignaturaPadreSeleccionada" de la clase asociada a este componente -->
+                <!-- Asociamos el evento Change de este select con la ejecución del método "cargarHijas" cuya implementación se encuentra en la clase asociada a este componente. De esta manera, cada vez que se seleccione una asignatura de este select, se ejecutará ese método -->
+                <!-- Con la directiva "compareWith" de Angular, quedara seleccionada la opción cuya asignatura del array contenido en la propiedad "asignaturasPadre" coincida con la asignatura contenida en la propiedad "asignaturaPadreSeleccionada" -->
+                <!-- Para ello, se invoca al método "compararAsignatura", cuya implementación se encuentra en la clase asociada a este componente, que devuelve true o false en función de si coincide o no coincide la asignatura de la propiedad "asignaturaPadreSeleccionada" con cada asignatura del array de la propiedad "asignaturasPadre" -->
+                <select id="asignaturaPadre" name="asignaturaPadre" class="form-control" required
+                    [(ngModel)]="asignaturaPadreSeleccionada" [compareWith]="compararAsignatura"
+                    (change)="cargarHijas()">
+                    <!-- Primera opción del select con el texto "--- Seleccione una asignatura ---". Con la directiva ngValue de Angular, asociamos el valor de esta opción con el valor undefined -->
+                    <option [ngValue]="undefined">--- Seleccione una asignatura ---</option>
+                    <!-- El resto de las opciones de este select se crean a partir de las asignaturas del array contenido en la propiedad "asignaturasPadre" de la clase asociada a este componente. Para ello, usamos la directiva *ngFor de Angular para iterar, usando la variable "asignatura" este array de asignaturas  -->
+                    <!-- En cada iteración, con la directiva ngValue de Angular, asociamos el valor de cada opción con el objeto Asignatura contenido en la variable "asignatura" y mostramos en cada opción el contenido de la propiedad "nombre" de ese objeto Asignatura de esa variable -->
+                    <option *ngFor="let asignatura of asignaturasPadre" [ngValue]="asignatura">
+                        {{ asignatura.nombre }}
+                    </option>
+                </select>
+            </div>
+            <!-- Contenedor con el estilo de Bootstrap "form-group" para el campo "Asignatura Hija" -->
+            <div class="form-group">
+                <!-- El atributo "for" sirve para enlazar este label con el select de abajo, es decir, con el select con name "asignaturaHija" e id "asignaturaHija" -->
+                <!-- De esta forma, como el atributo "for" tiene el mismo valor que el atributo "id" del select, cuando pulsemos sobre este label en la vista(html), automáticamente se establecerá el foco dentro de este select -->
+                <label for="asignaturaHija">Asignatura Hija</label>
+                <!-- Select con el estilo de Bootstrap "form-control" para seleccionar la asignatura hija asociada al exámen-->
+                <!-- Con la directiva ngModel de Angular mapeamos la asignatura seleccionada por el usuario en este select con la propiedad "asignatura" de la propiedad "entidad" de la clase asociada a este componente -->
+                <!-- Con la directiva "compareWith" de Angular, quedara seleccionada la opción cuya asignatura del array contenido en la propiedad "asignaturasHija" coincida con la asignatura contenida en la propiedad "asignatura" de la propiedad "entidad" -->
+                <!-- Para ello, se invoca al método "compararAsignatura", cuya implementación se encuentra en la clase asociada a este componente, que devuelve true o false en función de si coincide o no coincide la asignatura de la propiedad "asignatura" de la propiedad "entidad" con cada asignatura del array de la propiedad "asignaturasHija" -->
+                <select id="asignaturaHija" name="asignaturaHija"  class="form-control"
+                    [(ngModel)]="entidad.asignatura" [compareWith]="compararAsignatura">
+                    <!-- Primera opción del select con el texto "--- Seleccione una asignatura ---". Con la directiva ngValue de Angular, asociamos el valor de esta opción con el valor undefined -->
+                    <option [ngValue]="undefined">--- Seleccione una asignatura ---</option>
+                    <!-- El resto de las opciones de este select se crean a partir de las asignaturas del array contenido en la propiedad "asignaturasHija" de la clase asociada a este componente. Para ello, usamos la directiva *ngFor de Angular para iterar, usando la variable "asignatura" este array de asignaturas  -->
+                    <!-- En cada iteración, con la directiva ngValue de Angular, asociamos el valor de cada opción con el objeto Asignatura contenido en la variable "asignatura" y mostramos en cada opción el contenido de la propiedad "nombre" de ese objeto Asignatura de esa variable -->
+                    <option *ngFor="let asignatura of asignaturasHija" [ngValue]="asignatura">
+                        {{ asignatura.nombre }}
+                    </option>
+                </select>
+                <!-- Con la directiva *ngIf de Angular sólo mostramos este contenedor o div si la propiedad "error", de la clase asociada a este componente, existe y , además, contiene otra propiedad llamada "asignatura" que también existe y viene definida -->
+                <!-- Este contendor o div utiliza los estilos de Bootstrap "alert alert-danger" y muestra el contenido de la propiedad "asignatura" de la propiedad "error" de la clase asociada a este componente -->
+                <div *ngIf="error?.asignatura" class="alert alert-danger">
+                    {{ error.asignatura }}
+                </div>
+            </div>
+
+            <!-- Botón con estilos de Bootstrap para agregar preguntas al exámen -->
+            <!-- Asociamos el evento "Click" de este botón con la ejecución del método "agregarPregunta" cuya implementación se encuentra en la clase asociada a este componente -->
+            <button class="btn btn-light btn-lg my-3" (click)="agregarPregunta()">Agregar Pregunta</button>
+            <!-- Contenedor con el estilo de Bootstrap "form-group" para cada pregunta del exámen -->
+            <!-- Con la directiva *ngFor de Angular iteramos, usando la variable "pregunta", el array de preguntas del exámen contenido en la propiedad "preguntas" de la propiedad "entidad" de la clase asociada a este componente -->
+            <!-- La varaible "i" contiene el indice de cada iteración(empieza en 0) -->
+            <div class="form-group" *ngFor="let pregunta of entidad.preguntas; let i = index">
+                <!-- Para cada pregunta del exámen, creamos un contenedor con la clase de Bootstrap "row" para que visualmente se vea como una fila -->
+                <div class="row">
+                    <!-- Para cada fila, creamos un contenedor con la clase de Bootstrap "col-sm-2" para que visualmente se vea como una columna de 2 posiciones -->
+                    <div class="col-sm-2">
+                        <!-- Creamos en esta columna un label o etiqueta con el índice de la pregunta(Le sumamos una unidad al índice para que se muestre a partir del número 1) -->
+                        <label>Pregunta {{ i+1 }}:</label>
+                    </div>
+                    <!-- Para cada fila, creamos un contenedor con la clase de Bootstrap "col-sm-6" para que visualmente se vea como una columna de 6 posiciones -->
+                    <div class="col-sm-6">
+                        <!-- Creamos en esta columna un input con la clase de Bootstrap "form-control" que muestra el contenido de la propiedad "texto" del objeto de la variable "pregunta" -->
+                        <!-- Asociamos al evento "Change" de este input la ejecución del método "asignarTexto" cuya implementación se encuentra en la clase asociada a este componente -->
+                        <!-- Este método recibe el objeto de la variable "pregunta", con los datos de la pregunta del exámen que se está iterando, y los datos del evento producido contenidos en la variable "$event" -->
+                        <input class="form-control" type="text" value="{{ pregunta.texto }}" (change)="asignarTexto(pregunta,$event)"/>
+                    </div>
+                    <!-- Para cada fila, creamos un contenedor con la clase de Bootstrap "col-sm-1" para que visualmente se vea como una columna de 1 posición -->
+                    <div class="col-sm-1">
+                        <!-- Creamos en esta columna un botón con estilos de Bootstrap y asociamos al evento "Click" de este botón la ejecución del método "eliminarPregunta" cuya implementación se localiza en la clase asociada a este componente  -->
+                        <!-- Este método recibe el objeto de la variable "pregunta" con los datos de la pregunta del exámen que se está iterando -->
+                        <button class="btn btn-danger btn-sm" (click)="eliminarPregunta(pregunta)">x</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Con la directiva *ngIf de Angular sólo mostramos este contenedor o div si la propiedad "errorPreguntas", de la clase asociada a este componente, existe y está definida -->
+            <!-- Este contendor o div utiliza los estilos de Bootstrap "alert alert-danger" y muestra el contenido de la propiedad "errorPreguntas" de la clase asociada a este componente -->
+            <div *ngIf="errorPreguntas" class="alert alert-danger">
+                {{ errorPreguntas }}
+            </div>
+
+            <!-- Contenedor con el estilo de Bootstrap "form-group" para el botón de envío del formulario -->
+            <div class="form-group">
+                <!-- Botón con los estilos de Bootstrap "btn btn-primary" para enviar el formulario del curso -->
+                <!-- Asociamos el evento OnClick de es botón con la ejecución del método "editar", si el id de la entidad existe y está definido, o con la ejecución del método "crear", si el id de la entidad no existe. En ambos casos, las implementaciones de ambos métodos se encuentran en la clase asociada a este componente -->
+                <button type="button" (click)="entidad.id ? editar() : crear()" class="btn btn-primary">
+                    <!-- De la misma manera, si el id de la entidad existe y está definido, establecemos el texto "Editar" al nombre del botón, y en caso contario, establecemos el texto "Crear" -->
+                    {{ entidad.id ? 'Editar' : 'Crear' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+

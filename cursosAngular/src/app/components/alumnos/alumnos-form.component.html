@@ -1,0 +1,81 @@
+<!-- Panel o tarjeta obtenida de la página de Bootstrap y personalizada por nosotros -->
+<div class="card bg-light mb-3">
+    <!-- Mostramos el contenido de la propiedad "titulo" de la clase asociada a este componente -->
+    <div class="card-header">{{ titulo }}</div>
+    <div class="card-body">
+        <!-- Botón con estilos de Bootstrap que utiliza la directiva de Angular "routerLink" para navegar a la ruta "/alumnos" asociada al componente "AlumnosComponent" cuando se pulsa en él -->
+        <button class="btn btn-secondary my-2" routerLink="/alumnos">volver</button>
+        <!-- Formulario de creación o edición de alumnos -->
+        <form>
+            <!-- Contenedor con el estilo de Bootstrap "form-group" para el campo "Nombre" -->
+            <div class="form-group">
+                <!-- El atributo "for" sirve para enlazar este label con el input de abajo, es decir, con el input con name "nombre" e id "nombre" -->
+                <!-- De esta forma, como el atributo "for" tiene el mismo valor que el atributo "id" del input, cuando pulsemos sobre este label en la vista(html), automáticamente se establecerá el foco dentro de este input -->
+                <label for="nombre">Nombre</label>
+                <!-- Input con el estilo de Bootstrap "form-control" para introducir el nombre del alumno -->
+                <!-- Con la directiva ngModel de Angular mapeamos el nombre que introduzca el usuario en este input con la propiedad "nombre" de la propiedad "entidad" de la clase asociada a este componente -->
+                <!-- La directiva ngModel es bidireccional, es decir, si la propiedad "nombre" de la propiedad "entidad" está definida y tiene contenido, a través de esta directiva, también se muestra dicho contenido en el input -->
+                <input type="text" id="nombre" name="nombre" [(ngModel)]="entidad.nombre" class="form-control"/>
+                <!-- Con la directiva *ngIf de Angular sólo mostramos este contenedor o div si la propiedad "error", de la clase asociada a este componente, existe y , además, contiene otra propiedad llamada "nombre" que también existe y viene definida -->
+                <!-- Este contendor o div utiliza los estilos de Bootstrap "alert alert-danger" y muestra el contenido de la propiedad "nombre" de la propiedad "error" de la clase asociada a este componente -->
+                <div *ngIf="error?.nombre" class="alert alert-danger">
+                    {{ error.nombre }}
+                </div>
+            </div>
+            <!-- Contenedor con el estilo de Bootstrap "form-group" para el campo "Apellidos" -->
+            <div class="form-group">
+                <!-- El atributo "for" sirve para enlazar este label con el input de abajo, es decir, con el input con name "apellidos" e id "apellidos" -->
+                <!-- De esta forma, como el atributo "for" tiene el mismo valor que el atributo "id" del input, cuando pulsemos sobre este label en la vista(html), automáticamente se establecerá el foco dentro de este input -->
+                <label for="apellidos">Apellidos</label>
+                <!-- Input con el estilo de Bootstrap "form-control" para introducir los apellidos del alumno -->
+                <!-- Con la directiva ngModel de Angular mapeamos los apellidos que introduzca el usuario en este input con la propiedad "apellidos" de la propiedad "entidad" de la clase asociada a este componente -->
+                <!-- La directiva ngModel es bidireccional, es decir, si la propiedad "apellidos" de la propiedad "entidad" está definida y tiene contenido, a través de esta directiva, también se muestra dicho contenido en el input -->
+                <input type="text" id="apellidos" name="apellidos" [(ngModel)]="entidad.apellidos" class="form-control"/>
+                <!-- Con la directiva *ngIf de Angular sólo mostramos este contenedor o div si la propiedad "error", de la clase asociada a este componente, existe y , además, contiene otra propiedad llamada "apellidos" que también existe y viene definida -->
+                <!-- Este contendor o div utiliza los estilos de Bootstrap "alert alert-danger" y muestra el contenido de la propiedad "apellidos" de la propiedad "error" de la clase asociada a este componente -->
+                <div *ngIf="error?.apellidos" class="alert alert-danger">
+                    {{ error.apellidos }}
+                </div>
+            </div>
+            <!-- Contenedor con el estilo de Bootstrap "form-group" para el campo "Email" -->
+            <div class="form-group">
+                <!-- El atributo "for" sirve para enlazar este label con el input de abajo, es decir, con el input con name "email" e id "email" -->
+                <!-- De esta forma, como el atributo "for" tiene el mismo valor que el atributo "id" del input, cuando pulsemos sobre este label en la vista(html), automáticamente se establecerá el foco dentro de este input -->
+                <label for="email">Email</label>
+                <!-- Input con el estilo de Bootstrap "form-control" para introducir el email del alumno -->
+                <!-- Con la directiva ngModel de Angular mapeamos el email que introduzca el usuario en este input con la propiedad "email" de la propiedad "entidad" de la clase asociada a este componente -->
+                <!-- La directiva ngModel es bidireccional, es decir, si la propiedad "email" de la propiedad "entidad" está definida y tiene contenido, a través de esta directiva, también se muestra dicho contenido en el input -->
+                <input type="text" id="email" name="email" [(ngModel)]="entidad.email" class="form-control"/>
+                <!-- Con la directiva *ngIf de Angular sólo mostramos este contenedor o div si la propiedad "error", de la clase asociada a este componente, existe y , además, contiene otra propiedad llamada "email" que también existe y viene definida -->
+                <!-- Este contendor o div utiliza los estilos de Bootstrap "alert alert-danger" y muestra el contenido de la propiedad "email" de la propiedad "error" de la clase asociada a este componente -->
+                <div *ngIf="error?.email" class="alert alert-danger">
+                    {{ error.email }}
+                </div>
+            </div>
+            <!-- Contenedor con el estilo de Bootstrap "form-group" para el campo "File" -->
+            <div class="form-group">
+                <!-- Input obtenido de la página de Bootstrap para seleccionar y subir archivos personalizado por nosotros -->
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
+                    </div>
+                    <div class="custom-file">
+                    <!-- Asociamos el evento Change de este inputa con la ejecución del método "seleccionarFoto" cuya implementación se encuentra en la clase asociada a este componente -->
+                    <!-- El parámetro de entrada "$event" que recibe este método "seleccionarFoto" se correspnde con un objeto que contiene toda la información del evento producido -->
+                    <input type="file" (change)="seleccionarFoto($event)" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
+                    <label class="custom-file-label" for="inputGroupFile01">Seleccionar Foto</label>
+                    </div>
+                </div>
+            </div>
+            <!-- Contenedor con el estilo de Bootstrap "form-group" para el botón de envío del formulario -->
+            <div class="form-group">
+                <!-- Botón con los estilos de Bootstrap "btn btn-primary" para enviar el formulario del alumno -->
+                <!-- Asociamos el evento OnClick de es botón con la ejecución del método "editar", si el id de la entidad existe y está definido, o con la ejecución del método "crear", si el id de la entidad no existe. En ambos casos, las implementaciones de ambos métodos se encuentran en la clase asociada a este componente -->
+                <button type="button" (click)="entidad.id ? editar() : crear()" class="btn btn-primary">
+                    <!-- De la misma manera, si el id de la entidad existe y está definido, establecemos el texto "Editar" al nombre del botón, y en caso contario, establecemos el texto "Crear" -->
+                    {{ entidad.id ? 'Editar' : 'Crear' }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

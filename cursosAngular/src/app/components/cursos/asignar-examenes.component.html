@@ -1,0 +1,129 @@
+<!-- Tarjeta o card de Angular Material -->
+<mat-card>
+    <!-- Encabezado de la tarjeta con un título -->
+    <!-- Como Angular trabaja de forma reactiva y asíncrona, es posible que se renderice esta vista del componenete antes de tener la información del curso obtenida del backend
+         Entonces, para asegurarnos de que tenemos la información del curso antes de que se renderice esta vista, usamos la directiva de Angular ngIf que verifica que la propiedad "curso" de la clase asociada a este componente existe y está definida -->
+    <mat-card-header *ngIf="curso">
+      <mat-card-title>
+        Exámenes del curso {{ curso.nombre }}
+      </mat-card-title>
+    </mat-card-header>
+    <!-- Contenido de la tarjeta -->
+    <mat-card-content>
+        <!-- Tabs, o pestañas, de Angular Material -->
+        <!-- "dynamicHeight" es para que el tamaño de cada pestaña cambie dinámicamente cuando nos movemos de una pestaña a otra  -->
+        <!-- Con la directiva "selectedIndex", asociamos la propiedad "tabIndex" de la clase de este componente con este grupo de pestañas "mat-tab-group" -->
+        <mat-tab-group dynamicHeight [(selectedIndex)]="tabIndex">
+          <mat-tab label="Asignar Exámenes">
+            <!-- Formulario de Angular Material con un campo de búsqueda para la tabla de abajo -->
+            <mat-form-field class="mx-3" style="width: 50%;">
+                <!-- Input de Angular Material -->
+                <!-- Usando los corchetes, asignamos al atributo "formControl" de este componente el valor de la propiedad "autocompleteControl" de la clase asociada a este componente. Esto nos permite manejar este componente desde esta clase -->
+                <!-- Usando los corchetes, asignamos al atributo "matAutocomplete" de este componente el valor de la variable "autocomplete" del componente de abajo "mat-autocomplete". Esto nos permite enlazar este input de Angular Material con el componente de Angular Material "mat-autocomplete" de abajo -->
+                <input matInput [formControl]="autocompleteControl" [matAutocomplete]="autocomplete" placeholder="Añadir examen">
+                <!-- Componente de autocompletado de Angular Material -->
+                <!-- Exportamos la referencia de este componente "mat-autocomplete" en la variable "autocomplete" para enlazarlo con el input de Angular Material de arriba-->
+                <!-- "matAutocomplete" es una instancia, u objeto, que contiene la referencia de este componente "mat-autocomplete" -->
+                <!-- Usando los corchetes, asignamos al tributo "displayWith" de este componente el resultado de ejecutar el método "mostrarNombre" de la clase asociada a este componente. Esto es para que el componente "matInput", enlazado a este componente de autocompletado, muestre el nombre del exámen cada vez que se selecciona una opción de este autocompletado -->
+                <!-- Asociamos al evento "optionSelected" de este componente la ejecución del método "seleccionarExamen" de la clase asociada a este componente que se encarga de añadir el examen seleccionado a un array de exámenes que se añadirán al curso posteriormente -->
+                <!-- Pasamos los datos del evento producido al método "seleccionarExamen" para poder obtener el examen seleccionado -->
+                <mat-autocomplete #autocomplete="matAutocomplete" [displayWith]="mostrarNombre" (optionSelected)="seleccionarExamen($event)">
+                    <!-- Componente de Angular Material que consiste en una opción para seleccionar en el autocomplete -->
+                    <!-- Usando la directiva ngFor de Angular, creamos tantas opciones para el autocomplete como exámenes haya en el array de la propiedad "examenesFiltrados" de la clase asociada a este componente -->
+                    <!-- Usando corchetes, asignamos al atributo "value" de este componente la referencia, u objeto, del examen correspondiente en cada iteración -->
+                    <mat-option *ngFor="let examen of examenesFiltrados" [value]=examen>
+                        {{ examen.nombre }}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+
+            <!-- Tabla de la web de Angular Material Design(material.angular.io) adaptada por nosotros -->
+            <!-- "examenesAsignar" se trata de un array de tipo Examen que contiene los exámenes que no pertencen al curso y que se pueden asignar. Pasamos esta información al componente hijo "table" de Material Angular -->
+            <table mat-table [dataSource]="examenesAsignar" class="mat-elevation-z8 mx-3" style="width: 75%;">
+
+                <!-- Plantilla con la definición de la primera columna de la tabla -->
+                <ng-container matColumnDef="nombre"> <!-- Identificador de la columna de la tabla -->
+                    <th mat-header-cell *matHeaderCellDef> Nombre </th> <!-- Nombre de la columna de la tabla -->
+                    <td mat-cell *matCellDef="let examen"> {{examen.nombre}} </td> <!-- Cada fila para esta columna será renderizada con el nombre de cada examen contenido en el array "examenesAsignar" -->
+                </ng-container>
+
+                <!-- Plantilla con la definición de la segunda columna de la tabla -->
+                <ng-container matColumnDef="asignatura"> <!-- Identificador de la columna de la tabla -->
+                    <th mat-header-cell *matHeaderCellDef> Asignatura </th> <!-- Nombre de la columna de la tabla -->
+                    <td mat-cell *matCellDef="let examen"> {{examen.asignatura.nombre}} </td> <!-- Cada fila para esta columna será renderizada con el nombre de la asignatura de cada examen contenido en el array "examenesAsignar" -->
+                </ng-container>
+
+                <!-- Plantilla con la definición de la tercera columna de la tabla -->
+              <ng-container matColumnDef="eliminar"> <!-- Identificador de la columna de la tabla -->
+                <th mat-header-cell *matHeaderCellDef> Eliminar </th> <!-- Nombre de la columna de la tabla -->
+                <td mat-cell *matCellDef="let examen">
+                  <!-- Botón de Angular Material para eliminar un examen de la tabla -->
+                  <!-- Asociamos al evento "click" de este botón la ejecución del método "eliminarDelAsignar" de la clase asociada a este componente para eliminar un examen de la tabla de asignaciones al curso -->
+                  <!-- Este método recibe como parámetro de entrada el examen a eliminar -->
+                  <button mat-mini-fab color="warn" (click)="eliminarDelAsignar(examen)">x</button>
+                </td>
+              </ng-container>
+
+                <!-- Plantilla con la definición de la fila -->
+                <!-- "mostrarColumnas" es una propiedad de la clase asociada a este componente que indica a esta tabla qué columnas se tienen que renderizar en la cabecera y en los datos de las filas contiene un array de tipo String con los identificadores de las columnas definidas arriba que se quieren mostrar -->
+                <!-- Queremos que al hacer click sobre la fila, se seleccione su checkbox -->
+                <tr mat-header-row *matHeaderRowDef="mostrarColumnas"></tr>
+                <tr mat-row *matRowDef="let examen; columns: mostrarColumnas;"></tr>
+            </table>
+            <!-- Botón de Angular Material que asígna los exámenes seleccionados de la tabla anterior al curso -->
+            <!-- Para ello, asociamos al evento "click" de este botón la ejecución del método "asignar" de la clase asociada a este componente -->
+            <!-- Por defecto este botón está desactivado hasta que haya al menos un examen seleccionado en la tabla -->
+            <!-- Para ello, establecemos el valor del atributo "disabled"(true o false) a partir de la expresión "examenesAsignar.length === 0" -->
+            <button mat-raised-button color="primary" class="m-4" (click)="asignar()"
+              [disabled]="examenesAsignar.length === 0">Asignar</button>
+        </mat-tab>
+        <mat-tab label="Exámenes del curso">
+          <!-- Tabla de la web de Angular Material Design(material.angular.io) adaptada por nosotros -->
+          <!-- "dataSource" se trata de un origen de datos de tipo "MatTableDataSource<Examen>" que contiene un array de tipo Examen con los exámenes asignados al curso. Pasamos esta información al componente hijo "table" de Material Angular -->
+          <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 m-3" style="width: 75%;">
+  
+            <!-- Plantilla con la definición de la primera columna de la tabla -->
+            <ng-container matColumnDef="id"> <!-- Identificador de la columna de la tabla -->
+              <th mat-header-cell *matHeaderCellDef> Id </th> <!-- Nombre de la columna de la tabla -->
+              <td mat-cell *matCellDef="let examen"> {{examen.id}} </td> <!-- Cada fila para esta columna será renderizada con el id de cada examen contenido en el array del origen de datos "dataSource"-->
+            </ng-container>
+  
+            <!-- Plantilla con la definición de la segunda columna de la tabla -->
+            <ng-container matColumnDef="nombre"> <!-- Identificador de la columna de la tabla -->
+              <th mat-header-cell *matHeaderCellDef> Nombre </th> <!-- Nombre de la columna de la tabla -->
+              <td mat-cell *matCellDef="let examen"> {{examen.nombre}} </td> <!-- Cada fila para esta columna será renderizada con el nombre de cada examen contenido en el array del origen de datos "dataSource" -->
+            </ng-container>
+          
+            <!-- Plantilla con la definición de la tercera columna de la tabla -->
+            <ng-container matColumnDef="asignaturas"> <!-- Identificador de la columna de la tabla -->
+              <th mat-header-cell *matHeaderCellDef> Asignaturas </th> <!-- Nombre de la columna de la tabla -->
+              <td mat-cell *matCellDef="let examen"> {{examen.asignatura.padre.nombre}} -> {{examen.asignatura.nombre}} </td> <!-- Cada fila para esta columna será renderizada con los nombres de las asignaturas padre e hija de cada examen contenido en el array del origen de datos "dataSource" -->
+            </ng-container>
+
+            <!-- Plantilla con la definición de la cuarta columna de la tabla -->
+          <ng-container matColumnDef="eliminar"> <!-- Identificador de la columna de la tabla -->
+            <th mat-header-cell *matHeaderCellDef> Eliminar </th> <!-- Nombre de la columna de la tabla -->
+            <td mat-cell *matCellDef="let examen">
+              <!-- Botón de Angular Material para eliminar un examen del curso-->
+              <!-- Asociamos al evento "click" de este botón la ejecución del método "eliminarExamenDelCurso" de la clase asociada a este componente para eliminar un examen del curso -->
+              <!-- Este método recibe como parámetro de entrada el examen a eliminar -->
+              <button mat-mini-fab color="warn" (click)="eliminarExamenDelCurso(examen)">x</button>
+            </td>
+          </ng-container>
+          
+            <!-- Plantilla con la definición de la fila -->
+            <!-- "mostrarColumnasExamenes" es una propiedad de la clase asociada a este componente que indica a esta tabla qué columnas se tienen que renderizar en la cabecera y en los datos de las filas contiene un array de tipo String con los identificadores de las columnas definidas arriba que se quieren mostrar -->
+            <tr mat-header-row *matHeaderRowDef="mostrarColumnasExamenes"></tr>
+            <tr mat-row *matRowDef="let examen; columns: mostrarColumnasExamenes;"></tr>
+          </table>
+          <!-- Paginador de Angular Material con estilos de Bootstrap para esta tabla de exámenes pertenecientes al curso -->
+          <!-- Usando los corchetes sobre el atributo "pageSizeOptions", establecemos las opciones para cambiar el tamaño de registros por página a través de la propiedad "pageSizeOptions" de la clase asociada a este componente  -->
+          <!-- El atributo "showFirstLastButtons" de este paginador de Angular Material habilita los botones para ir a la primera página y última página de este paginador -->
+          <mat-paginator class="float-left mx-2"
+            [pageSizeOptions]="pageSizeOptions"
+            showFirstLastButtons>
+          </mat-paginator>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card-content>
+</mat-card>

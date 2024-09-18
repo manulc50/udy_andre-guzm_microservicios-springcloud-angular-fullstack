@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.3.1.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.formacionbdi.microservicios.commons.alumnos</groupId>
+	<artifactId>commons-alumnos</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>commons-alumnos</name>
+	<description>Demo project for Spring Boot</description>
+
+	<properties>
+		<java.version>12</java.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		
+		<!-- Como este proyecto es una librería para reutilizar la clase entidad Alumno, no hemos creado este proyecto con la depenedencia "spring-boot-starter-web" de Spring Boot y, por lo tanto, no se ha incluido automáticamente la dependencia "spring-boot-starter-validation" -->
+		<!-- Por esta razón, la tenemos que añadir manualmente para poder validar los objetos Json que nos llegan en las peticiones http antes de persistirlos o guardarlos en la base de datos -->
+		<!-- A partir de la versión 2.3.0 de Spring Boot, las dependencias "spring-boot-starter-web" y "spring-boot-starter-webflux" no incluyen la librería "spring-boot-starter-validation -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		
+		<!-- Como este proyecto es una librería para reutilizar las clase entidad Examen y Pregunta, no hemos creado este proyecto con la depenedencia "spring-boot-starter-web" de Spring Boot y, por lo tanto, no se ha incluido automáticamente la dependencia "spring-boot-starter-json" -->
+		<!-- Por esta razón, la tenemos que añadir manualmente para poder usar la anotación @JsonIgnore en la clase entidad Alumno -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-json</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
+
+</project>

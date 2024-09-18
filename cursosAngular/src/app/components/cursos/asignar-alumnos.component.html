@@ -1,0 +1,142 @@
+
+<!-- Tarjeta o card de Angular Material -->
+<mat-card>
+  <!-- Encabezado de la tarjeta con un título -->
+  <!-- Como Angular trabaja de forma reactiva y asíncrona, es posible que se renderice esta vista del componenete antes de tener la información del curso obtenida del backend
+       Entonces, para asegurarnos de que tenemos la información del curso antes de que se renderice esta vista, usamos la directiva de Angular ngIf que verifica que la propiedad "curso" de la clase asociada a este componente existe y está definida -->
+  <mat-card-header *ngIf="curso">
+    <mat-card-title>
+      Alumnos del curso {{ curso.nombre }}
+    </mat-card-title>
+  </mat-card-header>
+  <!-- Contenido de la tarjeta -->
+  <mat-card-content>
+    <!-- Tabs, o pestañas, de Angular Material -->
+    <!-- "dynamicHeight" es para que el tamaño de cada pestaña cambie dinámicamente cuando nos movemos de una pestaña a otra  -->
+    <!-- Con la directiva "selectedIndex", asociamos la propiedad "tabIndex" de la clase de este componente con este grupo de pestañas "mat-tab-group" -->
+    <mat-tab-group dynamicHeight [(selectedIndex)]="tabIndex">
+      <mat-tab label="Asignar Alumnos">
+        <!-- Formulario de Angular Material con un campo de búsqueda para la tabla de abajo -->
+        <mat-form-field class="mx-3" style="width: 50%;">
+            <!-- Input de Angular Material -->
+            <!-- A través del evento "keyup", cada vez que se escriba en este input, se buscará en nuestro backend los alumnos que coincidan con el término de búsqueda -->
+            <!-- Asociamos al evento "keyup" la ejecución del método "filtrar" de la clase asociada a este componente y le pasamos el valor de la propiedad "value" de la propiedad "target" del evento que contiene el término de búsqueda -->
+            <input matInput (keyup)="filtrar($event.target.value)" placeholder="Buscar Alumnos">
+        </mat-form-field>
+        <!-- Tabla de la web de Angular Material Design(material.angular.io) adaptada por nosotros -->
+        <!-- "alumnosAsignar" se trata de un array de tipo Alumno que contiene los alumnos que no pertencen al curso y que se pueden asignar. Pasamos esta información al componente hijo "table" de Material Angular -->
+        <table mat-table [dataSource]="alumnosAsignar" class="mat-elevation-z8 mx-3" style="width: 75%;">
+
+          <!-- Plantilla con la definición de la primera columna de la tabla -->
+          <ng-container matColumnDef="seleccion"> <!-- Identificador de la columna de la tabla -->
+              <th mat-header-cell *matHeaderCellDef>
+                  <!-- Nota: Si no se entiente el manejo de los checkboxes de Angular Material, ver la documentación en su web(material.angular.io) -->
+                  <!-- Checkbox de Angular Material -->
+                  <!-- Para poder seleccionar o deseleccionar todos los alumnos a la vez -->
+                  <!-- Con el evento "Change", es decir, cada vez que seleccionemos o deseleccionmos este checkbox, ejecutamos el método "seleccionarDeseleccinarTodos" de la clase asociada a este componente -->
+                  <!-- Únicamente se ejecutará el método "seleccionarDeseleccinarTodos" si hay evento y, en caso contrario, no se ejecutará nada -->
+                  <!-- Establecemos el valor del atributo "checked"(true o false) del componente "mat-checkbox" de Angular Material con el booleano resultante de la expresión "seleccion.hasValue() && estanTodosSeleccionados()" -->
+                  <!-- Establecemos el valor del atributo "indeterminate"(true o false. Si es true, visualmente se representa con un guión "-") del componente "mat-checkbox" de Angular Material con el booleano resultante de la expresión "seleccion.hasValue() && !estanTodosSeleccionados()" -->
+                  <!-- Es decir, queremos poner el atributo "checked" a true cuando todos los alumnos estén seleccionados y queremos porner el atributo "indeterminate" a true cuando haya alumnos seleccionados pero no todos -->
+                  <mat-checkbox
+                      (change)="$event ? seleccionarDeseleccinarTodos() : null"
+                      [checked]="seleccion.hasValue() && estanTodosSeleccionados()"
+                      [indeterminate]="seleccion.hasValue() && !estanTodosSeleccionados()"
+                  ></mat-checkbox>
+              </th> <!-- Nombre de la columna de la tabla -->
+              <td mat-cell *matCellDef="let alumno">
+                  <!-- Checkbox de Angular Material -->
+                  <!-- Para poder seleccionar o deseleccionar un alumno de manera individual -->
+                  <!-- Si se produce el evento "click" del checkbox, paramos la propagación de dicho evento porque queremos manejar este checkbox a través de su evento "change". Dicho de otra manera, queremos detener el evento "click" de este checkbox -->
+                  <!-- El método "toggle" selecciona y deselecciona la fila correspondiente -->
+                  <!-- Establecemos el valor del atributo "checked"(true o false) del componente "mat-checkbox" de Angular Material con el booleano resultante de la expresión "seleccion.isSelected(alumno)" -->
+                  <!-- Aquí no hay atributo "indeterminate" porque se trata del checkbox de un única fila -->
+                  <mat-checkbox
+                      (click)="$event.stopPropagation()"
+                      (change)="$event ? seleccion.toggle(alumno) : null"
+                      [checked]="seleccion.isSelected(alumno)"
+                  ></mat-checkbox>
+              </td> <!-- Cada fila para esta columna será renderizada con el nombre de cada alumno contenido en el array "alumnosAsignar" -->
+          </ng-container>
+
+          <!-- Plantilla con la definición de la segunda columna de la tabla -->
+          <ng-container matColumnDef="nombre"> <!-- Identificador de la columna de la tabla -->
+            <th mat-header-cell *matHeaderCellDef> Nombre </th> <!-- Nombre de la columna de la tabla -->
+            <td mat-cell *matCellDef="let alumno"> {{alumno.nombre}} </td> <!-- Cada fila para esta columna será renderizada con el nombre de cada alumno contenido en el array "alumnosAsignar" -->
+          </ng-container>
+        
+          <!-- Plantilla con la definición de la tercera columna de la tabla -->
+          <ng-container matColumnDef="apellidos"> <!-- Identificador de la columna de la tabla -->
+            <th mat-header-cell *matHeaderCellDef> Apellidos </th> <!-- Nombre de la columna de la tabla -->
+            <td mat-cell *matCellDef="let alumno"> {{alumno.apellidos}} </td> <!-- Cada fila para esta columna será renderizada con los apellidos de cada alumno contenido en el array "alumnosAsignar" -->
+          </ng-container>
+        
+          <!-- Plantilla con la definición de la fila -->
+          <!-- "mostrarColumnas" es una propiedad de la clase asociada a este componente que indica a esta tabla qué columnas se tienen que renderizar en la cabecera y en los datos de las filas contiene un array de tipo String con los identificadores de las columnas definidas arriba que se quieren mostrar -->
+          <!-- Queremos que al hacer click sobre la fila, se seleccione su checkbox -->
+          <tr mat-header-row *matHeaderRowDef="mostrarColumnas"></tr>
+          <tr mat-row *matRowDef="let alumno; columns: mostrarColumnas;" (click)="seleccion.toggle(alumno)"></tr>
+        </table>
+        <!-- Botón de Angular Material que asígna los alumnos seleccionados de la tabla anterior al curso -->
+        <!-- Para ello, asociamos al evento "click" de este botón la ejecución del método "asignar" de la clase asociada a este componente -->
+        <!-- Por defecto este botón está desactivado hasta que haya al menos un alumno seleccionado -->
+        <!-- Para ello, establecemos el valor del atributo "disabled"(true o false) a partir de la expresión "!seleccion.hasValue()" -->
+        <button mat-raised-button color="primary" class="m-4" (click)="asignar()"
+          [disabled]="!seleccion.hasValue()">Asignar</button>
+      </mat-tab>
+      <mat-tab label="Alumnos">
+        <!-- Tabla de la web de Angular Material Design(material.angular.io) adaptada por nosotros -->
+        <!-- "dataSource" se trata de un origen de datos de tipo "MatTableDataSource<Alumno>" que contiene un array de tipo Alumno con los alumnos asignados al curso. Pasamos esta información al componente hijo "table" de Material Angular -->
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 m-3" style="width: 75%;">
+
+          <!-- Plantilla con la definición de la primera columna de la tabla -->
+          <ng-container matColumnDef="id"> <!-- Identificador de la columna de la tabla -->
+            <th mat-header-cell *matHeaderCellDef> Id </th> <!-- Nombre de la columna de la tabla -->
+            <td mat-cell *matCellDef="let alumno"> {{alumno.id}} </td> <!-- Cada fila para esta columna será renderizada con el id de cada alumno contenido en el array del origen de datos "dataSource" -->
+          </ng-container>
+
+          <!-- Plantilla con la definición de la segunda columna de la tabla -->
+          <ng-container matColumnDef="nombre"> <!-- Identificador de la columna de la tabla -->
+            <th mat-header-cell *matHeaderCellDef> Nombre </th> <!-- Nombre de la columna de la tabla -->
+            <td mat-cell *matCellDef="let alumno"> {{alumno.nombre}} </td> <!-- Cada fila para esta columna será renderizada con el nombre de cada alumno contenido en el array del origen de datos "dataSource" -->
+          </ng-container>
+        
+          <!-- Plantilla con la definición de la tercera columna de la tabla -->
+          <ng-container matColumnDef="apellidos"> <!-- Identificador de la columna de la tabla -->
+            <th mat-header-cell *matHeaderCellDef> Apellidos </th> <!-- Nombre de la columna de la tabla -->
+            <td mat-cell *matCellDef="let alumno"> {{alumno.apellidos}} </td> <!-- Cada fila para esta columna será renderizada con los apellidos de cada alumno contenido en el array del origen de datos "dataSource" -->
+          </ng-container>
+
+          <!-- Plantilla con la definición de la cuarta columna de la tabla -->
+          <ng-container matColumnDef="email"> <!-- Identificador de la columna de la tabla -->
+            <th mat-header-cell *matHeaderCellDef> Email </th> <!-- Nombre de la columna de la tabla -->
+            <td mat-cell *matCellDef="let alumno"> {{alumno.email}} </td> <!-- Cada fila para esta columna será renderizada con el email de cada alumno contenido en el array del origen de datos "dataSource" -->
+          </ng-container>
+
+          <!-- Plantilla con la definición de la quinta columna de la tabla -->
+          <ng-container matColumnDef="eliminar"> <!-- Identificador de la columna de la tabla -->
+            <th mat-header-cell *matHeaderCellDef> Eliminar </th> <!-- Nombre de la columna de la tabla -->
+            <td mat-cell *matCellDef="let alumno">
+              <!-- Botón de Angular Material para eliminar un alumno del curso-->
+              <!-- Asociamos al evento "click" de este botón la ejecución del método "eliminarAlumno" de la clase asociada a este componente para eliminar un alumno del curso -->
+              <!-- Este método recibe como parámetro de entrada el alumno a eliminar -->
+              <button mat-mini-fab color="warn" (click)="eliminarAlumno(alumno)">x</button>
+            </td>
+          </ng-container>
+        
+          <!-- Plantilla con la definición de la fila -->
+          <!-- "mostrarColumnasAlumnos" es una propiedad de la clase asociada a este componente que indica a esta tabla qué columnas se tienen que renderizar en la cabecera y en los datos de las filas contiene un array de tipo String con los identificadores de las columnas definidas arriba que se quieren mostrar -->
+          <tr mat-header-row *matHeaderRowDef="mostrarColumnasAlumnos"></tr>
+          <tr mat-row *matRowDef="let alumno; columns: mostrarColumnasAlumnos;"></tr>
+        </table>
+        <!-- Paginador de Angular Material con estilos de Bootstrap para esta tabla de alumnos pertenecientes al curso -->
+        <!-- Usando los corchetes sobre el atributo "pageSizeOptions", establecemos las opciones para cambiar el tamaño de registros por página a través de la propiedad "pageSizeOptions" de la clase asociada a este componente  -->
+        <!-- El atributo "showFirstLastButtons" de este paginador de Angular Material habilita los botones para ir a la primera página y última página de este paginador -->
+        <mat-paginator class="float-left mx-2"
+            [pageSizeOptions]="pageSizeOptions"
+            showFirstLastButtons>
+        </mat-paginator>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card-content>
+</mat-card>

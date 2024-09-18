@@ -1,0 +1,84 @@
+<!-- Tarjeta o card de Angular Material -->
+<mat-card>
+    <!-- Encabezado de la tarjeta con un título -->
+    <!-- Como Angular trabaja de forma reactiva y asíncrona, es posible que se renderice esta vista del componenete antes de tener la información del curso obtenida del backend
+         Entonces, para asegurarnos de que tenemos la información del curso antes de que se renderice esta vista, usamos la directiva de Angular ngIf que verifica que la propiedad "curso" de la clase asociada a este componente existe y está definida -->
+    <mat-card-header *ngIf="curso">
+      <mat-card-title>
+        Exámenes del curso {{ curso.nombre }}
+      </mat-card-title>
+    </mat-card-header>
+    <!-- Contenido de la tarjeta -->
+    <mat-card-content>
+        <!-- Tabla de la web de Angular Material Design(material.angular.io) adaptada por nosotros -->
+        <!-- "dataSource" se trata de un origen de datos de tipo "MatTableDataSource<Examen>" que contiene un array de tipo Examen con los exámenes asignados al curso. Pasamos esta información al componente hijo "table" de Material Angular -->
+        <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 m-3" style="width: 75%;">
+
+            <!-- Plantilla con la definición de la primera columna de la tabla -->
+            <ng-container matColumnDef="id"> <!-- Identificador de la columna de la tabla -->
+                <th mat-header-cell *matHeaderCellDef> Id </th> <!-- Nombre de la columna de la tabla -->
+                <td mat-cell *matCellDef="let examen"> {{examen.id}} </td> <!-- Cada fila para esta columna será renderizada con el id de cada examen contenido en el array del origen de datos "dataSource"-->
+            </ng-container>
+
+            <!-- Plantilla con la definición de la segunda columna de la tabla -->
+            <ng-container matColumnDef="nombre"> <!-- Identificador de la columna de la tabla -->
+                <th mat-header-cell *matHeaderCellDef> Nombre </th> <!-- Nombre de la columna de la tabla -->
+                <td mat-cell *matCellDef="let examen"> {{examen.nombre}} </td> <!-- Cada fila para esta columna será renderizada con el nombre de cada examen contenido en el array del origen de datos "dataSource" -->
+            </ng-container>
+            
+            <!-- Plantilla con la definición de la tercera columna de la tabla -->
+            <ng-container matColumnDef="asignaturas"> <!-- Identificador de la columna de la tabla -->
+                <th mat-header-cell *matHeaderCellDef> Asignaturas </th> <!-- Nombre de la columna de la tabla -->
+                <td mat-cell *matCellDef="let examen"> {{examen.asignatura.padre.nombre}} -> {{examen.asignatura.nombre}} </td> <!-- Cada fila para esta columna será renderizada con los nombres de las asignaturas padre e hija de cada examen contenido en el array del origen de datos "dataSource" -->
+            </ng-container>
+
+            <!-- Plantilla con la definición de la cuarta columna de la tabla -->
+            <ng-container matColumnDef="preguntas"> <!-- Identificador de la columna de la tabla -->
+                <th mat-header-cell *matHeaderCellDef> Preguntas </th> <!-- Nombre de la columna de la tabla -->
+                <td mat-cell *matCellDef="let examen">{{examen.preguntas.length}}</td> <!-- Cada fila para esta columna será renderizada con el número de preguntas de cada examen contenido en el array del origen de datos "dataSource" -->
+            </ng-container>
+
+            <!-- Plantilla con la definición de la quinta columna de la tabla -->
+            <ng-container matColumnDef="responder"> <!-- Identificador de la columna de la tabla -->
+                <th mat-header-cell *matHeaderCellDef> Responder </th> <!-- Nombre de la columna de la tabla -->
+                <td mat-cell *matCellDef="let examen">
+                    <!-- Botón de Angular Material para responder un examen del curso-->
+                    <!-- Asociamos al evento "click" de este botón la ejecución del método "responderExamen" de la clase asociada a este componente para responder un examen del curso -->
+                    <!-- Este método recibe como parámetro de entrada el examen a responder -->
+                    <!-- Si el exámen ya fue respondido por el alumno, desactivamos el botón y ponemos el texto "Responido" en ese botón. En caso contrario, habilitamos el botón y ponemos el texto "Responder"-->
+                    <!-- Para ello, establecemos el valor del atributo "disabled"(true o false) a partir de la expresión "examen.respondido" -->
+                    <button mat-stroked-button color="warn" [disabled]="examen.respondido" (click)="responderExamen(examen)">
+                        {{examen.respondido ? 'Respondido' : 'Responder'}}
+                    </button>
+                </td>
+            </ng-container>
+
+            <!-- Plantilla con la definición de la quinta columna de la tabla -->
+            <ng-container matColumnDef="ver"> <!-- Identificador de la columna de la tabla -->
+                <th mat-header-cell *matHeaderCellDef> Ver </th> <!-- Nombre de la columna de la tabla -->
+                <td mat-cell *matCellDef="let examen">
+                    <!-- Botón de Angular Material para responder un examen del curso-->
+                    <!-- Asociamos al evento "click" de este botón la ejecución del método "verExamen" de la clase asociada a este componente para ver las preguntas y las respuestas de un examen del curso respondido por el alumno -->
+                    <!-- Este método recibe como parámetro de entrada el examen a visualizar -->
+                    <!-- Si el exámen ya fue respondido por el alumno, habilitamos el botón para que el alumno pueda verlo. En caso contrario, desactivamos el botón -->
+                    <!-- Para ello, establecemos el valor del atributo "disabled"(true o false) a partir de la expresión "!examen.respondido" -->
+                    <button mat-stroked-button color="primary" [disabled]="!examen.respondido" (click)="verExamen(examen)">
+                        Ver
+                    </button>
+                </td>
+            </ng-container>
+            
+            <!-- Plantilla con la definición de la fila -->
+            <!-- "mostrarColumnasExamenes" es una propiedad de la clase asociada a este componente que indica a esta tabla qué columnas se tienen que renderizar en la cabecera y en los datos de las filas contiene un array de tipo String con los identificadores de las columnas definidas arriba que se quieren mostrar -->
+            <tr mat-header-row *matHeaderRowDef="mostrarColumnasExamenes"></tr>
+            <tr mat-row *matRowDef="let examen; columns: mostrarColumnasExamenes;"></tr>
+        </table>
+        <!-- Paginador de Angular Material con estilos de Bootstrap para esta tabla de exámenes pertenecientes al curso -->
+        <!-- Usando los corchetes sobre el atributo "pageSizeOptions", establecemos las opciones para cambiar el tamaño de registros por página a través de la propiedad "pageSizeOptions" de la clase asociada a este componente  -->
+        <!-- El atributo "showFirstLastButtons" de este paginador de Angular Material habilita los botones para ir a la primera página y última página de este paginador -->
+        <mat-paginator class="float-left mx-2"
+            [pageSizeOptions]="pageSizeOptions"
+            showFirstLastButtons>
+        </mat-paginator>
+    </mat-card-content>
+</mat-card>

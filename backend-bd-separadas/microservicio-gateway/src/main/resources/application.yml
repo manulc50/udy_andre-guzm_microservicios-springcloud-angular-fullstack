@@ -1,0 +1,14 @@
+# Configuramos el CORS de manera centralizada en este Gateway para todas las rutas hacia nuestros microservicios permitiendo o habilitanto al cliente, que se encuentra en la url o ruta "http://localhost:4200", realizar peticiones http de tipo GET, POST, PUT y DELETE a las API REST de nuestros microservicios 
+spring:
+  cloud:
+    gateway:
+      globalcors:        corsConfigurations:
+          '[/**]':
+            allowedOrigins: 'http://localhost:4200'
+            allowedHeaders: # Con '*' se admite cualquier tipo de cabecera("Content-Type","Authorization",etc...)
+              - Content-Type # Como nuestro cliente Angular envía peticiones http Post y Put a esta backend usando la cabecera "Content-Type" con valor "application/json", habilitamos este tipo de cabecera en el CORS para que estas peticiones http se hagan con éxito
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE          

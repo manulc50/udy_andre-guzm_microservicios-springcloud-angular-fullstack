@@ -1,0 +1,30 @@
+<!-- Título de Angular Material para el título del modal-->
+<!-- Mostramos el nombre del curso -->
+<h1 mat-dialog-title>Curso {{curso.nombre}}</h1>
+<!-- Contenedor de Angular Material para el contenido del modal-->
+<div mat-dialog-content>
+    <!-- Mostramos el nombre del examen -->
+    <p>Examen {{examen.nombre}}</p>
+    <!-- Panel que se expande tipo acordeón de Angular Material -->
+    <!-- Creamos un panel expansivo tipo acordeón por cada respuesta del exmanen -->
+    <mat-expansion-panel *ngFor="let respuesta of respuestas">
+        <mat-expansion-panel-header>
+            <!-- Mostramos el texto de la pregunta del examen asociada a cada respuesta para el título de cada panel expansivo tipo acordeón -->
+          <mat-panel-title>
+            {{respuesta.pregunta.texto}}
+          </mat-panel-title>
+          <mat-panel-description></mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <!-- Mostramos el texto de cada respuesta -->
+        <p>{{respuesta.texto}}</p>
+
+      </mat-expansion-panel>
+</div>
+<!-- Contenedor de Angular Material para las acciones del modal-->
+<div mat-dialog-actions>
+    <!-- Botón de Angular Material para cerrar el modal -->
+    <!-- Asociamos al evento "click" de este botón la ejecución del método "cerrar" de la clase asociada a este componente para cerrar la ventana del modal sin hacer nada más -->
+    <button mat-button (click)="cerrar()">Cerrar</button>
+</div>
+

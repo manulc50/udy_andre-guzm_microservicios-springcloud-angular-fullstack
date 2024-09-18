@@ -1,0 +1,9 @@
+<!-- Cargamos la vista(html) del Navbar que se encuentra en el componente cuyo selector es "app-navbar" -->
+<app-navbar></app-navbar>
+<!-- Este contenedor o elemento div es para centrar el contenido de cada componente cargado dinámicamente a través del selector o elemento "router-outlet" -->
+<!-- Este centrado se consigue a través del estilo de Bootstrap "container". Además, aplicamos también el estilo de Bootstrap "my-3" para dar un margen en el eje y con valor 3 respecto al Navbar anterior -->
+<div class="container my-3">
+  <!-- Carga de manera dinámica los componentes de nuestra aplicación mapeados con las rutas definidas en el módulo "app-routing-module.ts" -->
+  <!-- Es decir, nos permite navegar de manera dinámica entre los distintos componentes de nuestra aplicación -->
+  <router-outlet></router-outlet>
+</div>

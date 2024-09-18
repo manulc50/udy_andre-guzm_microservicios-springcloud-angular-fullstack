@@ -1,0 +1,75 @@
+<!-- Panel o tarjeta obtenida de la página de Bootstrap y personalizada por nosotros -->
+<div class="card bg-light mb-3">
+    <!-- Mostramos el contenido de la propiedad "titulo" de la clase asociada a este componente -->
+    <div class="card-header">{{ titulo }}</div>
+    <div class="card-body">
+        <!-- Botón con estilos de Bootstrap que utiliza la directiva de Angular "routerLink" para navegar a la ruta "/cursos/form" asociada al componente "CursosFormComponent" cuando se pulsa en él -->
+        <button class="btn btn-primary my-2" routerLink="/cursos/form">Crear</button>
+        <!-- Con la directiva *ngIf de Angular comprobamos is la propiedad "lista" de la clase asociada a este componente existe y, además, si el array de cursos contenido en esta propiedad tiene una longitud o tamaño igual a 0, es decir, aún no hay cursos registrados en nuestro backend API REST -->
+        <!-- En caso afirmativo, se muestra este contenedor o div con estilos de Bootstrap que contiene un mensaje informativo para el usuario diciendo que no hay cursos registrados en el sistema -->
+        <div *ngIf="lista?.length == 0" class="alert alert-info">
+            No hay cursos registrados en el sistema.
+        </div>
+        <!-- Con la directiva *ngIf de Angular comprobamos is la propiedad "lista" de la clase asociada a este componente existe y, además, si el array de cursos contenido en esta propiedad tiene una longitud o tamaño mayor a 0, es decir, existen cursos registrados en nuestro backend API REST -->
+        <!-- En caso afirmativo, se muestra esta tabla con estilos de Bootstrap que contiene el listado de cursos registrados en el sistema -->
+        <table *ngIf="lista?.length > 0" class="table table-hover table-striped">
+            <!-- Cabecera de la tabla -->
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>nombre</th>
+                    <th>alumnos</th>
+                    <th>examenes</th>
+                    <th>creado en</th>
+                    <th>editar</th>
+                    <th>eliminar</th>
+                </tr>
+            </thead>
+            <!-- Cuerpo de la tabla -->
+            <tbody>
+                <!-- Con al directiva *ngFor de Angular itermanos el array de cursos contenido en la propiedad "lista" de la clase asociada a este componente -->
+                <!-- Para cada curso de este array, mostramos su id, su nombre y su fecha de creación y añadimos botones para asignar alumnos al curso, para editar el curso y para eliminarlo -->
+                <tr *ngFor="let curso of lista">
+                    <td>{{ curso.id }}</td>
+                    <!-- Usamos el pipe "uppercase" de Angular para mostrar el nombre del curso en letras mayúsculas-->
+                    <td>{{ curso.nombre | uppercase }}</td>
+                    <td>
+                        <!-- Botón con estilos de Bootstrap, para asignar alumnos a un curso, que utiliza la directiva de Angular "routerLink" para navegar, cuando se pulsa en él, a la ruta formada por el texto "/cursos/asignar-alumnos" más el valor del id del curso . Esta ruta está asociada al componente "AsignarAlumnosComponent"-->
+                        <!-- En este caso, usamos corchetes en la directiva "routerLink" de Angular porque le estamos pasando una variable que se corresponde con un array que contiene la ruta "/cursos/asignar-alumnos" y la variable que se le pasa a esa ruta que se trata del id del curso -->
+                        <button class="btn btn-info btn-sm" [routerLink]="['/cursos/asignar-alumnos',curso.id]">
+                            añadir ({{ curso.alumnos.length }})
+                        </button>
+                    </td>
+                    <td>
+                        <!-- Botón con estilos de Bootstrap, para asignar exámenes a un curso, que utiliza la directiva de Angular "routerLink" para navegar, cuando se pulsa en él, a la ruta formada por el texto "/cursos/asignar-examenes" más el valor del id del curso . Esta ruta está asociada al componente "AsignarExamenesComponent"-->
+                        <!-- En este caso, usamos corchetes en la directiva "routerLink" de Angular porque le estamos pasando una variable que se corresponde con un array que contiene la ruta "/cursos/asignar-examenes" y la variable que se le pasa a esa ruta que se trata del id del curso -->
+                        <button class="btn btn-info btn-sm" [routerLink]="['/cursos/asignar-examenes',curso.id]">
+                            añadir ({{ curso.examenes.length }})
+                        </button>
+                    </td>
+                    <!-- Usamos el pipe "date" de Angular para dar el formato "yyyy/MM/dd" a la fecha de creación del curso -->
+                    <td>{{ curso.createAt | date: 'yyyy/MM/dd' }}</td>
+                    <td>
+                        <!-- Botón con estilos de Bootstrap, para editar un curso, que utiliza la directiva de Angular "routerLink" para navegar, cuando se pulsa en él, a la ruta formada por el texto "/cursos/form" más el valor del id del curso . Esta ruta está asociada al componente "CursosFormComponent"-->
+                        <!-- En este caso, usamos corchetes en la directiva "routerLink" de Angular porque le estamos pasando una variable que se corresponde con un array que contiene la ruta "/cursos/form" y la variable que se le pasa a esa ruta que se trata del id del curso -->
+                        <button class="btn btn-secondary btn-sm" [routerLink]="['/cursos/form',curso.id]">Editar</button>
+                    </td>
+                    <td>
+                        <!-- Botón con estilos de Bootstrap, para eliminar un curso, donde asociamos su evento OnClick con la ejecución del método "eliminar", cuya implementación se encuentra en la clase asociada a este componente, pasándole el curso a eliminar -->
+                        <button class="btn btn-danger btn-sm" (click)="eliminar(curso)">Eliminar</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- Paginador de Angular Material con estilos de Bootstrap para esta tabla de cursos -->
+        <!-- Usando los corchetes sobre los atributos "length", "pageSize", "pageIndex" y "pageSizeOptions", establecemos el número total de registros, el número de registros por página por defecto, la página actual y las opciones para cambiar el tamaño de registros por página a través de las propiedades "totalRegistros", "totalPorPagina", "paginaActual" y "pageSizeOptions" de la clase asociada a este componente respectivamente  -->
+        <!-- El atributo "showFirstLastButtons" de este paginador de Angular Material habilita los botones para ir a la primera página y última página de este paginador -->
+        <!-- Asociamos al evento Page de este paginador la ejecución del método "paginar" cuya implementación se encuentra en la clase asociada a este componente. De esta manera, cada vez que se aumente o se disminuya de página, se lanzará este evento ejecutándose el método "paginar" -->
+        <!-- El parámetro de entrada "$event" que recibe este método "paginar" se correspnde con un objeto que contiene toda la información del evento producido -->
+        <mat-paginator class="float-left mx-2"
+            [length]="totalRegistros" [pageSize]="totalPorPagina" [pageIndex]="paginaActual" [pageSizeOptions]="pageSizeOptions"
+            showFirstLastButtons    
+            (page)="paginar($event)">
+        </mat-paginator>
+    </div>
+  </div>

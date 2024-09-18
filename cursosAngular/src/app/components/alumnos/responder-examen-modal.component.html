@@ -1,0 +1,39 @@
+<!-- Título de Angular Material para el título del modal-->
+<!-- Mostramos el nombre del curso -->
+<h1 mat-dialog-title>Curso {{curso.nombre}}</h1>
+<!-- Contenedor de Angular Material para el contenido del modal-->
+<div mat-dialog-content>
+    <!-- Mostramos el nombre del examen -->
+    <p>Examen {{examen.nombre}}</p>
+    <!-- Panel que se expande tipo acordeón de Angular Material -->
+    <!-- Creamos un panel expansivo tipo acordeón por cada pregunta del exmane-->
+    <mat-expansion-panel *ngFor="let pregunta of examen.preguntas">
+        <mat-expansion-panel-header>
+            <!-- Mostramos el texto de cada pregunta del examen como el título de cada panel expansivo tipo acordeón -->
+          <mat-panel-title>
+            {{pregunta.texto}}
+          </mat-panel-title>
+          <mat-panel-description></mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <!-- Formulario de Angular Material con un campo para escribir la respuesta de cada pregunta del examen -->
+        <mat-form-field style="width: 95%;">
+            <!-- Textarea de Angular Material -->
+            <!-- Asociamos al evento "change" de este textarea la ejecución del método "responder" de la clase asociada a este componente para almacenar la respuesta de cada pregunta escrita por el alumno -->
+            <!-- Este método recibe como parámetros de entrada la pregunta que se va a responder y los datos del evento producido para poder recuperar en este método la respuesta del alumno para esa pregunta -->
+            <textarea matInput placeholder="Deja tu respuesta" (change)="responder(pregunta, $event)"></textarea>
+        </mat-form-field>
+
+      </mat-expansion-panel>
+</div>
+<!-- Contenedor de Angular Material para las acciones del modal-->
+<div mat-dialog-actions>
+    <!-- Botón de Angular Material para cancelar responder el examen -->
+    <!-- Asociamos al evento "click" de este botón la ejecución del método "cancelar" de la clase asociada a este componente para cerrar la ventana del modal sin hacer nada -->
+    <button mat-button (click)="cancelar()">Cancelar</button>
+    <!-- Botón de Angular Material para enviar las respuestas del examen -->
+    <!-- Usando lo corchetes, asignamos al atributo "mat-dialog-close" el valor de la propiedad "respuestas" de la clase asociada a este componente tipo Modal -->
+    <!-- De esta manera, cuando se pulse este botón, se cerrará la ventana del modal y se enviará, o se emitirá, el contenido de la propiedad "respuestas" para ser recibido en el lugar del código(componente "ResponderExamenComponent") que se suscriba al Observable del evento "afterClosed" del modal -->
+    <button mat-button [mat-dialog-close]="respuestas">Enviar</button>
+</div>
+
